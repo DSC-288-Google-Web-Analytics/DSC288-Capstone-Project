@@ -1,18 +1,21 @@
-# DSC288-Capstone-Project
 <a id="top"></a>
 
-<p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:1E3A8A,100:0F766E&height=180&section=header&text=Predicting%20Customer%20Revenue&fontSize=38&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Web%20Analytics%20Data%20%7C%20Single-Stage%20Regression%20vs%20Two-Step%20Models&descAlignY=55&descSize=18" />
-</p>
-
+<div align="center">
+  <img
+    src="https://capsule-render.vercel.app/api?type=waving&color=0:A7C7E7,25:F4B6C2,50:F9E79F,75:B7E4C7,100:CDB4DB&height=190&section=header&text=Predicting%20Customer%20Revenue&fontSize=32&fontColor=2F3E46&animation=fadeIn&fontAlignY=33&desc=Google%20Web%20Analytics%20%7C%20Single-Stage%20Regression%20vs%20Two-Step%20Models&descAlignY=54&descSize=15"
+    style="display: block; margin: 0 auto;"
+  />
+</div>
 <div align="center">
   <h3><i>A Comparison of Single-Stage Regression and Two-Step Machine Learning Models</i></h3>
   <h4>DSC 288R: Capstone Project</h4>
 
   <p>
-    <strong>Pooja Panchal</strong> &nbsp;&bull;&nbsp;
-    <strong>Jinxin Xiao</strong> &nbsp;&bull;&nbsp;
-    <strong>Justin Chanthabandith</strong>
+    <strong>Pooja Panchal</strong> (Project Manager, Front End Developer, Data Engineer)
+    &nbsp;&bull;&nbsp;
+    <strong>Jinxin Xiao</strong> (Data Engineer) 
+    &nbsp;&bull;&nbsp;
+    <strong>Justin Chanthabandith</strong> (EDA, Data Engineer)
   </p>
 
   <div>
@@ -45,13 +48,13 @@
 
 E-commerce companies collect large volumes of web analytics data describing how users arrive at a site, what devices they use, how they navigate sessions, and whether those visits lead to purchases. Translating this behavioral data into revenue forecasts is an important machine learning problem because accurate predictions can improve customer targeting, advertising strategy, and overall business planning.
 
-This project uses the Google Analytics Customer Revenue Prediction dataset to study whether session-level web analytics features can be used to predict customer revenue. Because most sessions generate zero revenue while a smaller fraction lead to purchases, this problem is both practically relevant and technically challenging.
+This project uses the Google Analytics Customer Revenue Prediction dataset to study whether session-level web analytics features can be used to predict customer revenue. Because most sessions generate zero revenue while a smaller fraction lead to purchases, this problem is both practically relevant and technically challenging. 
 
 ### Why Big Data and Distributed Computing?
 
-This project is well suited for DSC 288R because the dataset contains approximately 1.7 million session-level records with structured and semi-structured fields. Preparing the data requires flattening nested Google Analytics columns, handling missing values, engineering temporal and behavioral features, and encoding categorical variables at scale. :contentReference[oaicite:0]{index=0}
+This project is well suited for DSC 288R because the dataset contains approximately 1.7 million session-level records with structured and semi-structured fields. Preparing the data requires flattening nested Google Analytics columns, handling missing values, engineering temporal and behavioral features, and encoding categorical variables at scale. 
 
-Distributed computing tools such as Spark can support large-scale preprocessing, feature extraction, aggregation, and exploratory analysis more efficiently than a single-machine workflow. The project also involves repeated experimentation across multiple machine learning pipelines, making scalable data processing and reproducible workflow design especially valuable.
+Distributed computing tools such as Spark can support large-scale preprocessing, feature extraction, aggregation, and exploratory analysis more efficiently than a single-machine workflow. The project also involves repeated experimentation across multiple machine learning pipelines, making scalable data processing and reproducible workflow design especially valuable. 
 
 ### Project Overview
 
@@ -76,82 +79,67 @@ Distributed computing tools such as Spark can support large-scale preprocessing,
 
 ### 2.1 Data Exploration
 
-The project uses the **Google Analytics Customer Revenue Prediction** dataset from Kaggle. The primary training file, `train_v2.csv`, contains roughly **1.7 million session-level records** with nested fields related to traffic source, device information, geographic attributes, visit timing, and user behavior. :contentReference[oaicite:1]{index=1}
+The project uses the **Google Analytics Customer Revenue Prediction** dataset from Kaggle. The primary training file, `train_v2.csv`, contains roughly **1.7 million session-level records** with nested fields related to traffic source, device information, geographic attributes, visit timing, and user behavior. :contentReference[oaicite:4]{index=4}
 
 | Dataset | Measures | Resolution |
 |---|---|---|
 | `train_v2.csv` | Session metadata, traffic source, device, geography, activity, transaction revenue | Session-level |
 
-Key EDA goals include:
-- quantifying the proportion of zero-revenue versus positive-revenue sessions
-- understanding missingness across nested and categorical fields
-- profiling major traffic sources, device categories, and geographic patterns
-- examining skewness in the revenue distribution
-- identifying temporal trends in visits and purchases
+At this stage, exploratory data analysis has focused on understanding the structure of the dataset, the distribution of the target variable, and the major feature groups available for modeling. Initial inspection suggests that the revenue outcome is sparse, with many sessions generating no revenue and a much smaller set of positive-revenue sessions. This supports the motivation for comparing direct regression against a two-step modeling strategy. :contentReference[oaicite:5]{index=5}
 
-Key EDA findings from distributed Spark operations such as `df.count()`, `df.describe()`, `groupBy().agg()`, and `distinct().count()` will include:
+Current EDA goals and observations include:
+
+- identifying the proportion of zero-revenue versus positive-revenue sessions
+- examining the highly right-skewed distribution of transaction revenue
+- reviewing missingness patterns across nested and categorical variables
+- profiling traffic source, device type, and geographic fields
+- identifying which nested columns will need to be flattened before modeling
+
+Key EDA findings from distributed Spark operations such as `df.count()`, `df.describe()`, `groupBy().agg()`, and `distinct().count()`:
 
 - the dataset is heavily imbalanced, with many zero-revenue sessions
-- transaction revenue is highly right-skewed
-- several important predictors are nested and must be flattened before modeling
-- user behavior, traffic source, device type, and visit timing appear likely to contribute predictive signal
+- transaction revenue is highly skewed and likely benefits from log transformation
+- several important predictors are nested and require preprocessing before modeling
+- traffic, behavioral, temporal, and device-related fields appear to provide meaningful predictive signal
 
 **Figures**
-- Revenue distribution before and after log transformation
-- Class balance for zero vs positive revenue
-- Top traffic sources and device categories
-- Missing value summary across selected features
+- [Insert revenue distribution plot]
+- [Insert zero vs positive revenue bar chart]
+- [Insert missing value summary]
+- [Insert top traffic sources or device categories]
 
 ---
 
 ### 2.2 Preprocessing
 
-Before modeling, the raw Google Analytics data will be transformed into an analysis-ready table through a preprocessing pipeline that includes:
+[Placeholder: This section will describe the preprocessing pipeline once finalized.]
 
+Planned topics to include:
 - flattening nested JSON-like columns
 - handling missing values
-- encoding categorical features
+- encoding categorical variables
 - creating date-based and session-level features
 - selecting relevant predictors for modeling
 
-Additional feature engineering will focus on:
-- temporal variables derived from visit dates
-- traffic source information
-- device and browser categories
-- geographic attributes
-- behavioral session indicators
-
-Because the revenue target is sparse and highly skewed, the preprocessing workflow will also prepare the data for two separate modeling strategies:
-1. direct regression on revenue
-2. a two-step pipeline with purchase classification followed by regression on purchasing sessions only
+---
 
 ### 2.3 Models
 
-#### Baseline
-**Random Forest**
-- Serves as an interpretable and robust ensemble baseline for tabular prediction
-- Useful for comparing against boosting-based methods
+[Placeholder: This section will describe the completed modeling workflow.]
 
-#### Model 1
-**Single-Stage Regression**
-- A direct model trained to predict customer revenue from session-level features
-- Designed to test whether one unified regression approach can handle sparse revenue targets
+Planned model comparisons:
+- **Baseline:** Random Forest
+- **Model 1:** Single-stage regression
+- **Model 2:** Two-step classification + regression
+- **Advanced models:** XGBoost and LightGBM
 
-#### Model 2
-**Two-Step Classification + Regression Pipeline**
-- Step 1: classifier predicts whether a session will generate any revenue
-- Step 2: regressor estimates revenue only for predicted purchasing sessions
+Planned details to include:
+- model justification
+- feature inputs
+- hyperparameter tuning strategy
+- train, validation, and test split design
 
-This architecture is motivated by the large number of zero-revenue sessions in the data and is intended to better handle zero inflation. :contentReference[oaicite:2]{index=2}
-
-#### Primary Algorithms
-**XGBoost**
-- Well suited for structured and sparse tabular data
-- Handles nonlinear feature interactions effectively
-
-**LightGBM**
-- Efficient gradient boosting model with strong performance on large tabular datasets
-- Particularly useful for high-dimensional feature spaces and scalable training
+---
 
 ### 2.4 Tools and Technical Stack
 
@@ -161,7 +149,6 @@ This architecture is motivated by the large number of zero-revenue sessions in t
 | **Distributed Processing** | Apache Spark |
 | **Machine Learning** | scikit-learn, XGBoost, LightGBM |
 | **Data Source** | Kaggle |
-| **Data Format Work** | Nested field flattening, tabular feature engineering |
 | **Visualization** | Matplotlib, Seaborn, Plotly |
 | **Notebook Development** | Jupyter |
 | **Version Control** | Git, GitHub |
@@ -170,6 +157,8 @@ This architecture is motivated by the large number of zero-revenue sessions in t
 
 ## 3. Results
 [Back to Top](#top)
+
+[Placeholder: Results will be added after model training and evaluation are completed.]
 
 ### 3.1 Model Performance
 
@@ -182,65 +171,57 @@ This architecture is motivated by the large number of zero-revenue sessions in t
 | LightGBM | TBD | Efficient gradient boosting model |
 
 ### 3.2 Visual Results
-- Predicted vs actual revenue
-- Residual plots
-- Feature importance rankings
-- Comparison of single-stage and two-step performance
-- Purchase classification performance for the first stage of the two-step model
+- [Insert predicted vs actual revenue plot]
+- [Insert residual plots]
+- [Insert feature importance rankings]
+- [Insert single-stage vs two-step comparison]
 
 ### 3.3 Best Model
-This section will summarize which modeling strategy performs best on held-out validation data and whether explicitly separating purchase prediction from revenue estimation improves predictive performance.
+[Placeholder: Summarize best-performing model here.]
 
 ---
 
 ## 4. Discussion
 [Back to Top](#top)
 
-### 4.1 Metric Selection
+[Placeholder: This section will be completed after results are available.]
 
-The primary evaluation metric is **RMSE on log-transformed revenue**. This is appropriate because the target variable is continuous, strongly skewed, and affected by large outliers. Log transformation reduces the influence of extreme purchase values and provides a more stable basis for model comparison. :contentReference[oaicite:3]{index=3}
+### 4.1 Metric Selection
+[Placeholder: Explain why RMSE on log-transformed revenue is the primary metric.]
 
 ### 4.2 Model Interpretation
-
-Model interpretation will focus on feature importance analysis to identify which session-level characteristics are most associated with purchasing behavior and revenue generation. Likely important predictors include traffic source, device type, timing variables, and session activity features.
+[Placeholder: Discuss feature importance and model behavior.]
 
 ### 4.3 Shortcomings
-
-Several limitations are expected:
-- severe class imbalance due to many zero-revenue sessions
-- possible information loss from session-level aggregation
-- missing or noisy values in nested analytics fields
-- sensitivity of results to feature engineering and target transformation choices
+[Placeholder: Discuss class imbalance, sparse purchases, missing data, and other limitations.]
 
 ### 4.4 Business Relevance
-
-Even modest gains in predictive accuracy can support better customer targeting, campaign optimization, and strategic planning in e-commerce environments. This makes the problem practically important in addition to being methodologically interesting.
+[Placeholder: Explain how the results support e-commerce decision-making.]
 
 ### 4.5 Impact of Distributed Computing
-
-Distributed computing is especially useful in this project because it supports scalable parsing, flattening, cleaning, grouping, and feature engineering across a large session-level dataset. Spark can also accelerate EDA and repeated experiments across multiple model pipelines.
+[Placeholder: Describe how Spark and distributed processing improved scalability.]
 
 ---
 
 ## 5. Conclusion
 [Back to Top](#top)
 
+[Placeholder: This section will be completed after final analysis.]
+
 ### What We Learned
-- Whether web analytics features contain sufficient signal to predict revenue
-- Whether a two-step architecture better handles zero-inflated revenue outcomes
-- Which session-level predictors contribute most to purchasing behavior
+- [Placeholder]
+- [Placeholder]
+- [Placeholder]
 
 ### What We Would Do Differently
-- add more extensive hyperparameter tuning
-- explore additional feature selection strategies
-- evaluate alternative target transformations
-- incorporate richer user-level session history if available
+- [Placeholder]
+- [Placeholder]
+- [Placeholder]
 
 ### What We Would Explore With More Time
-- CatBoost or neural tabular models
-- calibrated probability estimates for the first-stage classifier
-- ensembling between single-stage and two-step approaches
-- more detailed temporal modeling of user sessions
+- [Placeholder]
+- [Placeholder]
+- [Placeholder]
 
 ---
 
