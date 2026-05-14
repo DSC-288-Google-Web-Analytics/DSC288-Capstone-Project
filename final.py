@@ -163,9 +163,9 @@ class TwoStageRevenueModel:
         return np.sqrt(mean_squared_error(y, pred))
 
 
-# ---------------------------------------------------------------------------
-# Data processor  (fixed typo: DataProcsser → DataProcessor)
-# ---------------------------------------------------------------------------
+# --------------------------------
+# Data processor
+# --------------------------------
 
 class DataProcessor:
     def __init__(self, path_file=None):
