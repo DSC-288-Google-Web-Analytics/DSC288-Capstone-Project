@@ -2,27 +2,30 @@
 
 <div align="center">
   <img
-    src="https://capsule-render.vercel.app/api?type=waving&color=0:A7C7E7,25:F4B6C2,50:F9E79F,75:B7E4C7,100:CDB4DB&height=190&section=header&text=Predicting%20Customer%20Revenue&fontSize=32&fontColor=2F3E46&animation=fadeIn&fontAlignY=33&desc=Google%20Web%20Analytics%20%7C%20Single-Stage%20Regression%20vs%20Two-Step%20Models&descAlignY=54&descSize=15"
+    src="https://capsule-render.vercel.app/api?type=waving&color=0:A7C7E7,25:F4B6C2,50:F9E79F,75:B7E4C7,100:CDB4DB&height=190&section=header&text=Google%20Analytics%20Revenue%20Prediction&fontSize=32&fontColor=2F3E46&animation=fadeIn&fontAlignY=33&desc=Session-Level%20Revenue%20Forecasting%20%7C%20Gradient%20Boosting%20%7C%20Leakage-Safe%20Features&descAlignY=54&descSize=15"
     style="display: block; margin: 0 auto;"
   />
 </div>
+
 <div align="center">
-  <h3><i>A Comparison of Single-Stage Regression and Two-Step Machine Learning Models</i></h3>
+  <h3><i>Predicting Customer Revenue from Google Analytics Session Data</i></h3>
   <h4>DSC 288R: Capstone Project</h4>
 
   <p>
-    <strong>Pooja Panchal</strong> (Project Manager, Front End Developer, Data Engineer)
+    <strong>Pooja Panchal</strong> (Project Organization, Data Engineering, JSON Extraction, Report Write-Up)
     &nbsp;&bull;&nbsp;
-    <strong>Jinxin Xiao</strong> (Data Engineer) 
+    <strong>Jinxin Xiao</strong> (EDA, LightGBM Implementation)
     &nbsp;&bull;&nbsp;
-    <strong>Justin Chanthabandith</strong> (EDA, Data Engineer)
+    <strong>Justin Chanthabandith</strong> (Data Access, EDA, Modeling Pipeline, XGBoost Implementation)
   </p>
 
   <div>
     <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
-    <img src="https://img.shields.io/badge/Apache_Spark-E25A1C?style=for-the-badge&logo=apachespark&logoColor=white" />
+    <img src="https://img.shields.io/badge/Jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white" />
+    <img src="https://img.shields.io/badge/Polars-CD792C?style=for-the-badge&logo=polars&logoColor=white" />
+    <img src="https://img.shields.io/badge/pandas-150458?style=for-the-badge&logo=pandas&logoColor=white" />
     <img src="https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white" />
-    <img src="https://img.shields.io/badge/XGBoost-189FDD?style=for-the-badge&logoColor=white" />
+    <img src="https://img.shields.io/badge/XGBoost-FF6600?style=for-the-badge" />
     <img src="https://img.shields.io/badge/LightGBM-9ACD32?style=for-the-badge" />
     <img src="https://img.shields.io/badge/Kaggle-20BEFF?style=for-the-badge&logo=kaggle&logoColor=white" />
   </div>
@@ -31,12 +34,16 @@
 ---
 
 <p align="center">
-  <a href="#1-introduction" style="font-size: 16px;">Introduction</a> |
-  <a href="#2-methods" style="font-size: 16px;">Methods</a> |
-  <a href="#3-results" style="font-size: 16px;">Results</a> |
-  <a href="#4-discussion" style="font-size: 16px;">Discussion</a> |
-  <a href="#5-conclusion" style="font-size: 16px;">Conclusion</a> |
-  <a href="#6-statement-of-collaboration" style="font-size: 16px;">Collaboration</a>
+  <a href="#1-introduction">Introduction</a> |
+  <a href="#2-data-and-problem-structure">Data</a> |
+  <a href="#3-methods">Methods</a> |
+  <a href="#4-results">Results</a> |
+  <a href="#5-discussion">Discussion</a> |
+  <a href="#6-project-completion-summary">Project Summary</a> |
+  <a href="#7-statement-of-collaboration">Collaboration</a> |
+  <a href="#repository-structure">Structure</a> |
+  <a href="#how-to-run">How to Run</a> |
+  <a href="#references">References</a>
 </p>
 
 ---
@@ -46,235 +53,344 @@
 
 ### Why This Project?
 
-E-commerce companies collect large volumes of web analytics data describing how users arrive at a site, what devices they use, how they navigate sessions, and whether those visits lead to purchases. Translating this behavioral data into revenue forecasts is an important machine learning problem because accurate predictions can improve customer targeting, advertising strategy, and overall business planning.
+E-commerce companies collect large volumes of web analytics data that describe how visitors arrive at a site, what devices they use, where they are located, how they interact with each session, and whether those sessions lead to purchases. This project uses the **Google Analytics Customer Revenue Prediction** dataset to predict session-level customer revenue for the Google Merchandise Store.
 
-This project uses the Google Analytics Customer Revenue Prediction dataset to study whether session-level web analytics features can be used to predict customer revenue. Because most sessions generate zero revenue while a smaller fraction lead to purchases, this problem is both practically relevant and technically challenging. 
+The task is difficult because most sessions produce no revenue. This creates a **zero-inflated regression problem** where the model must learn patterns for a very small number of revenue-generating sessions while avoiding overprediction for the large majority of zero-revenue sessions.
 
-### Why Big Data and Distributed Computing?
+### Research Question
 
-This project is well suited for DSC 288R because the dataset contains approximately 1.7 million session-level records with structured and semi-structured fields. Preparing the data requires flattening nested Google Analytics columns, handling missing values, engineering temporal and behavioral features, and encoding categorical variables at scale. 
-
-Distributed computing tools such as Spark can support large-scale preprocessing, feature extraction, aggregation, and exploratory analysis more efficiently than a single-machine workflow. The project also involves repeated experimentation across multiple machine learning pipelines, making scalable data processing and reproducible workflow design especially valuable. 
+> Can session-level Google Analytics features predict customer revenue, and do gradient boosting models outperform baseline, linear, random forest, and two-step modeling approaches on a highly zero-inflated target?
 
 ### Project Overview
 
 | Aspect | Detail |
 |---|---|
-| **Problem Type** | Regression with zero-inflated target structure |
-| **Target Variable** | Customer transaction revenue |
-| **Dataset** | Google Analytics Customer Revenue Prediction (`train_v2.csv`) |
-| **Research Question** | Does a two-step model outperform a single-stage regression model for customer revenue prediction? |
-| **Baseline Model** | Random Forest |
-| **Model 1** | Single-stage revenue regression |
-| **Model 2** | Two-step classification + regression pipeline |
-| **Advanced Models** | XGBoost, LightGBM |
-| **Evaluation** | RMSE on log-transformed revenue |
-| **Secondary Analysis** | Feature importance and interpretation |
-| **Infrastructure** | Python, Spark, Kaggle dataset, distributed preprocessing workflow |
+| **Problem Type** | Zero-inflated session-level revenue prediction |
+| **Target Variable** | `totals.transactionRevenue` |
+| **Modeling Target** | `log_revenue = log1p(transactionRevenue)` |
+| **Primary Metric** | RMSE on log-transformed revenue |
+| **Dataset** | Google Analytics Customer Revenue Prediction, Kaggle 2018 |
+| **File Used** | `train_v2.csv` |
+| **Data Scale** | 1,708,337 sessions and 1,323,730 unique visitors |
+| **Positive Revenue Rate** | 1.0837% of sessions |
+| **Train/Test Split** | Visitor-grouped 80/20 split using `fullVisitorId` |
+| **Best Final Model** | LightGBM Regressor |
+| **Best Test RMSE** | 1.5192 on log-transformed revenue |
+| **LightGBM Test MAE** | 0.2667 on log-transformed revenue |
+| **Main Challenge** | About 98.9% of sessions have zero revenue, while positive revenue is highly skewed |
 
 ---
 
-## 2. Methods
+## 2. Data and Problem Structure
 [Back to Top](#top)
 
-### 2.1 Data Exploration
+### Dataset
 
-The project uses the **Google Analytics Customer Revenue Prediction** dataset from Kaggle. The primary training file, `train_v2.csv`, contains roughly **1.7 million session-level records** with nested fields related to traffic source, device information, geographic attributes, visit timing, and user behavior. :contentReference[oaicite:4]{index=4}
+The project uses `train_v2.csv` from Kaggle's **Google Analytics Customer Revenue Prediction** competition. Each row represents one anonymized Google Merchandise Store session.
 
-| Dataset | Measures | Resolution |
-|---|---|---|
-| `train_v2.csv` | Session metadata, traffic source, device, geography, activity, transaction revenue | Session-level |
-
-At this stage, exploratory data analysis has focused on understanding the structure of the dataset, the distribution of the target variable, and the major feature groups available for modeling. Initial inspection suggests that the revenue outcome is sparse, with many sessions generating no revenue and a much smaller set of positive-revenue sessions. This supports the motivation for comparing direct regression against a two-step modeling strategy. :contentReference[oaicite:5]{index=5}
-
-Current EDA goals and observations include:
-
-- identifying the proportion of zero-revenue versus positive-revenue sessions
-- examining the highly right-skewed distribution of transaction revenue
-- reviewing missingness patterns across nested and categorical variables
-- profiling traffic source, device type, and geographic fields
-- identifying which nested columns will need to be flattened before modeling
-
-Key EDA findings from distributed Spark operations such as `df.count()`, `df.describe()`, `groupBy().agg()`, and `distinct().count()`:
-
-- the dataset is heavily imbalanced, with many zero-revenue sessions
-- transaction revenue is highly skewed and likely benefits from log transformation
-- several important predictors are nested and require preprocessing before modeling
-- traffic, behavioral, temporal, and device-related fields appear to provide meaningful predictive signal
-
-**Figures**
-- [Insert revenue distribution plot]
-- [Insert zero vs positive revenue bar chart]
-- [Insert missing value summary]
-- [Insert top traffic sources or device categories]
-
----
-
-### 2.2 Preprocessing
-
-[Placeholder: This section will describe the preprocessing pipeline once finalized.]
-
-Planned topics to include:
-- flattening nested JSON-like columns
-- handling missing values
-- encoding categorical variables
-- creating date-based and session-level features
-- selecting relevant predictors for modeling
-
----
-
-### 2.3 Models
-
-[Placeholder: This section will describe the completed modeling workflow.]
-
-Planned model comparisons:
-- **Baseline:** Random Forest
-- **Model 1:** Single-stage regression
-- **Model 2:** Two-step classification + regression
-- **Advanced models:** XGBoost and LightGBM
-
-Planned details to include:
-- model justification
-- feature inputs
-- hyperparameter tuning strategy
-- train, validation, and test split design
-
----
-
-### 2.4 Tools and Technical Stack
-
-| Category | Tools |
+| Feature Group | Examples |
 |---|---|
-| **Programming Language** | Python |
-| **Distributed Processing** | Apache Spark |
-| **Machine Learning** | scikit-learn, XGBoost, LightGBM |
-| **Data Source** | Kaggle |
-| **Visualization** | Matplotlib, Seaborn, Plotly |
-| **Notebook Development** | Jupyter |
-| **Version Control** | Git, GitHub |
+| Visitor identity | `fullVisitorId` |
+| Session timing | `date`, `visitStartTime`, `visitNumber` |
+| Traffic source | `channelGrouping`, `trafficSource.medium`, `trafficSource.source` |
+| Device | `device.deviceCategory`, `device.browser`, `device.operatingSystem` |
+| Geography | `geoNetwork.country` |
+| Session activity | `totals.hits`, `totals.pageviews` |
+| Target | `totals.transactionRevenue` |
+
+The raw file is not flat. Several columns, including `device`, `geoNetwork`, `totals`, and `trafficSource`, are stored as nested JSON-like strings. The final notebook extracts only the fields needed for EDA and modeling, then drops the raw nested columns to reduce memory usage.
+
+### Key Dataset Challenges
+
+| Challenge | Why It Matters | How We Address It |
+|---|---|---|
+| **Zero inflation** | Only 1.0837% of sessions generate revenue | Compare zero baseline, mean baseline, direct regressors, and two-step models |
+| **Revenue skew** | Positive revenue values vary across a wide range | Use `log1p(transactionRevenue)` for training and evaluation |
+| **Nested JSON fields** | Important predictors are hidden inside string columns | Extract selected fields from `device`, `geoNetwork`, `totals`, and `trafficSource` |
+| **High-cardinality categories** | Source, browser, and country can create sparse features | Keep the top 25 categories and group the rest as `Other` |
+| **Visitor leakage risk** | The same visitor can appear in multiple sessions | Split by `fullVisitorId` so visitors do not overlap across train and test sets |
+| **Visitor history leakage** | Future sessions can accidentally influence historical features | Build cumulative visitor features using only prior sessions |
+| **Large dataset size** | The file has over 1.7 million rows | Use Polars for loading and feature preparation before converting to pandas for modeling |
+| **Metric sensitivity** | MAE rewards predicting zero too often | Use RMSE on log revenue as the primary metric |
 
 ---
 
-## 3. Results
+## 3. Methods
 [Back to Top](#top)
 
-[Placeholder: Results will be added after model training and evaluation are completed.]
+### 3.1 Preprocessing Pipeline
 
-### 3.1 Model Performance
+The final notebook prepares the raw data through the following workflow:
 
-| Model | RMSE on Log Revenue | Notes |
-|---|---:|---|
-| Random Forest | TBD | Baseline ensemble model |
-| Single-Stage Regression | TBD | Direct revenue prediction |
-| Two-Step Model | TBD | Classification followed by regression |
-| XGBoost | TBD | Boosted tree model |
-| LightGBM | TBD | Efficient gradient boosting model |
+1. **Data acquisition**  
+   The notebook supports downloading the Kaggle dataset through the Kaggle API. It uses `train_v2.csv` as the main input file.
 
-### 3.2 Visual Results
-- [Insert predicted vs actual revenue plot]
-- [Insert residual plots]
-- [Insert feature importance rankings]
-- [Insert single-stage vs two-step comparison]
+2. **Efficient loading with Polars**  
+   The dataset is loaded with Polars to handle the full 1,708,337-row file more safely than a standard full pandas load.
 
-### 3.3 Best Model
-[Placeholder: Summarize best-performing model here.]
+3. **Nested field extraction**  
+   The notebook extracts selected fields from the nested JSON-like columns:
+   - `totals`: `transactionRevenue`, `hits`, `pageviews`, `bounces`, `newVisits`
+   - `device`: `deviceCategory`, `browser`, `operatingSystem`
+   - `geoNetwork`: `country`
+   - `trafficSource`: `medium`, `source`
+
+4. **Target engineering**  
+   Missing revenue values are treated as zero. The pipeline creates:
+   - `revenue`
+   - `has_revenue`
+   - `log_revenue`
+
+5. **Date and time features**  
+   The notebook converts date and timestamp fields into:
+   - `date_parsed`
+   - `visit_start_dt`
+   - `year`
+   - `month`
+   - `day_of_week`
+   - `hour`
+
+6. **EDA-driven feature selection**  
+   The final feature set keeps engagement, traffic, device, geography, timing, and visitor history features. It drops `totals.bounces` and `totals.newVisits` from modeling because their binary-null structure becomes weak after imputation, and `visitNumber` captures the returning-visitor signal more reliably.
+
+7. **Leakage-safe visitor history features**  
+   Sessions are sorted by visitor and time. Cumulative visitor features are created using only prior sessions for the same visitor.
+
+8. **Visitor-level train/test split**  
+   The notebook uses `GroupShuffleSplit` with `fullVisitorId` as the group variable. This prevents the same visitor from appearing in both training and test data.
+
+### 3.2 Final Feature Set
+
+| Feature Group | Final Features |
+|---|---|
+| Session behavior | `totals.hits`, `totals.pageviews`, `visitNumber` |
+| Traffic source | `channelGrouping`, `trafficSource.medium`, `trafficSource.source` |
+| Device | `device.deviceCategory`, `device.browser`, `device.operatingSystem` |
+| Geography | `geoNetwork.country` |
+| Timing | `month`, `day_of_week`, `hour` |
+| Visitor history | `visitor_prior_session_count`, `visitor_prior_log_total_revenue`, `visitor_prior_avg_session_revenue`, `visitor_prior_max_session_revenue`, `visitor_prior_purchase_rate` |
+
+High-cardinality categorical features are reduced before one-hot encoding:
+
+| Feature | Treatment |
+|---|---|
+| `trafficSource.source` | Keep top 25 values, map all others to `Other` |
+| `device.browser` | Keep top 25 values, map all others to `Other` |
+| `geoNetwork.country` | Keep top 25 values, map all others to `Other` |
+
+### 3.3 Train/Test Split and Preprocessing
+
+The final modeling table contains **1,708,337 rows and 21 columns**.
+
+| Split Detail | Value |
+|---|---:|
+| Train rows | 1,366,852 |
+| Test rows | 341,485 |
+| Train visitors | 1,058,984 |
+| Test visitors | 264,746 |
+| Visitor overlap | 0 |
+
+Preprocessing differs slightly by model type:
+
+| Model Type | Numeric Processing | Categorical Processing |
+|---|---|---|
+| Linear and logistic models | Median imputation and standard scaling | Constant imputation with `Missing`, then one-hot encoding |
+| Tree-based models | Median imputation without scaling | Constant imputation with `Missing`, then one-hot encoding |
+
+### 3.4 Models Evaluated
+
+| Model | Purpose |
+|---|---|
+| Zero Revenue Baseline | Predicts zero revenue for every session |
+| Mean Log Revenue Baseline | Predicts the training-set mean log revenue |
+| Linear Regression | Simple linear supervised baseline |
+| Random Forest Regressor | Nonlinear ensemble baseline |
+| XGBoost Regressor | Gradient boosting direct regression model |
+| LightGBM Regressor | Gradient boosting direct regression model |
+| Two-Step Logistic + Random Forest | Classifies purchase first, then predicts positive revenue amount |
+| Two-Step Logistic + XGBoost | Two-step model with XGBoost positive-revenue regressor |
+| Two-Step Logistic + LightGBM | Two-step model with LightGBM positive-revenue regressor |
+
+### 3.5 Final Modeling Strategy
+
+The final notebook compares direct revenue regression models against two-step models. The two-step models estimate purchase probability with logistic regression, then multiply that probability by a positive-revenue prediction.
+
+Although the target is highly zero-inflated, the direct gradient boosting models performed better than the two-step models. The final recommended model is **LightGBM Regressor** because it achieved the lowest test RMSE.
 
 ---
 
-## 4. Discussion
+## 4. Results
 [Back to Top](#top)
 
-[Placeholder: This section will be completed after results are available.]
+### 4.1 Final Model Performance
 
-### 4.1 Metric Selection
-[Placeholder: Explain why RMSE on log-transformed revenue is the primary metric.]
+All results are measured on the held-out test set using log-transformed revenue. Lower RMSE is better.
 
-### 4.2 Model Interpretation
-[Placeholder: Discuss feature importance and model behavior.]
+| Rank | Model | RMSE on Log Revenue | MAE on Log Revenue | Notes |
+|---:|---|---:|---:|---|
+| 1 | **LightGBM Regressor** | **1.5192** | 0.2667 | Best overall model |
+| 2 | **XGBoost Regressor** | **1.5210** | 0.2673 | Nearly tied with LightGBM |
+| 3 | Random Forest Regressor | 1.5241 | 0.2635 | Strong nonlinear baseline |
+| 4 | Linear Regression | 1.7320 | 0.4140 | Better than naive RMSE baselines, but weaker than tree models |
+| 5 | Mean Log Revenue Baseline | 1.8284 | 0.3788 | Predicts the same mean log revenue for every session |
+| 6 | Zero Revenue Baseline | 1.8382 | **0.1896** | Lowest MAE, but poor RMSE because it misses revenue sessions |
+| 7 | Two-Step Logistic + Random Forest | 3.7540 | 1.5121 | Underperformed due to unstable purchase probabilities |
+| 8 | Two-Step Logistic + XGBoost | 3.7567 | 1.5156 | Two-step model did not improve performance |
+| 9 | Two-Step Logistic + LightGBM | 3.7580 | 1.5168 | Two-step model did not improve performance |
 
-### 4.3 Shortcomings
-[Placeholder: Discuss class imbalance, sparse purchases, missing data, and other limitations.]
+### 4.2 Main Findings
 
-### 4.4 Business Relevance
-[Placeholder: Explain how the results support e-commerce decision-making.]
+**LightGBM achieved the strongest overall performance.**  
+LightGBM achieved the best RMSE (1.5192), narrowly ahead of XGBoost (1.5210). This confirms that gradient boosting models are well suited for the nonlinear patterns in this tabular revenue prediction problem.
 
-### 4.5 Impact of Distributed Computing
-[Placeholder: Describe how Spark and distributed processing improved scalability.]
+**XGBoost performed nearly identically to LightGBM.**  
+XGBoost achieved an RMSE of 1.5210, which was only 0.0018 higher than LightGBM. Both models outperformed Random Forest on RMSE.
+
+**Random Forest remained a strong baseline.**  
+Random Forest achieved an RMSE of 1.5241. This shows that tree-based models can capture useful nonlinear relationships among engagement, traffic source, device, geography, timing, and visitor history features.
+
+**MAE is misleading for this dataset.**  
+The zero-revenue baseline had the lowest MAE because most sessions have no revenue. However, it performed worse on RMSE because it completely misses the rare high-revenue sessions that matter most.
+
+**Two-step models did not improve results.**  
+The two-step models performed much worse than the direct regressors. The likely reason is that the logistic regression purchase probabilities were poorly calibrated on a target where only about 1.08% of sessions generated revenue. Those unstable probabilities were multiplied into the revenue predictions and increased error.
+
+**Leakage-safe visitor history is important.**  
+The final notebook includes prior-session visitor features because EDA showed that previous visitor behavior is related to future revenue. These features were built using only earlier sessions, which protects the evaluation from future-information leakage.
 
 ---
 
-## 5. Conclusion
+## 5. Discussion
 [Back to Top](#top)
 
-[Placeholder: This section will be completed after final analysis.]
+### 5.1 Why RMSE on Log Revenue?
 
-### What We Learned
-- [Placeholder]
-- [Placeholder]
-- [Placeholder]
+RMSE on `log1p(transactionRevenue)` is the primary metric because it penalizes larger mistakes more strongly than MAE while reducing the extreme scale of raw revenue. This matters because a useful business model should identify rare revenue-generating sessions, not simply predict zero for nearly everyone.
 
-### What We Would Do Differently
-- [Placeholder]
-- [Placeholder]
-- [Placeholder]
+### 5.2 Model Interpretation
 
-### What We Would Explore With More Time
-- [Placeholder]
-- [Placeholder]
-- [Placeholder]
+The results suggest that revenue prediction depends on feature interactions. For example, the value of a session can depend on a combination of visit number, pageviews, traffic source, device type, country, time, and prior visitor behavior. Gradient boosting models are effective here because they can capture nonlinear relationships without manually creating every interaction.
+
+### 5.3 Current Limitations
+
+| Limitation | Impact |
+|---|---|
+| Revenue-generating sessions are rare | Purchase patterns are difficult to learn reliably |
+| Positive revenue is highly skewed | Large purchases remain difficult to predict accurately |
+| Results use one visitor-grouped train/test split | Additional validation could improve confidence in the final ranking |
+| High-cardinality categories are grouped | Some category-level detail is lost when rare values become `Other` |
+| Visitor history features depend on prior sessions | New visitors have limited historical signal |
+| Two-step models used logistic regression for purchase probability | Better calibration may be needed before a two-step design can help |
+
+### 5.4 Business Relevance
+
+A useful session revenue model can help an e-commerce team prioritize marketing resources, evaluate traffic quality, improve retargeting, and identify sessions or visitors that are more likely to generate meaningful revenue. The main value is not predicting every zero-revenue session correctly. The main value is identifying the small share of sessions that are most likely to produce revenue.
 
 ---
 
-## 6. Statement of Collaboration
+## 6. Project Completion Summary
 [Back to Top](#top)
 
-**Pooja Panchal (Project Manager, Front End Developer, and Data Engineer)**  
-Led project management responsibilities including scheduling, coordination, and overall progress tracking. Contributed to frontend development and README design, and supported data engineering tasks such as preprocessing, feature engineering, and implementation of the end-to-end modeling pipeline.
+The final project successfully completed the full machine learning workflow:
 
-**Jinxin Xiao (Data Engineer)**  
-Contributed to data engineering responsibilities including data preprocessing, feature extraction, and preparation of the final modeling dataset. Supported the machine learning workflow by helping structure data pipelines for training and evaluation.
+- Loaded and processed the full `train_v2.csv` dataset with Polars.
+- Extracted useful fields from nested JSON-like columns.
+- Performed EDA on target skew, zero inflation, missingness, outliers, categorical patterns, time effects, and visitor-level behavior.
+- Created a clean modeling table with engagement, traffic, device, geography, timing, and visitor history features.
+- Built leakage-safe prior-session visitor features.
+- Used visitor-grouped train/test splitting to prevent visitor overlap.
+- Compared naive baselines, Linear Regression, Random Forest, XGBoost, LightGBM, and two-step models.
+- Identified LightGBM as the best final model with a test RMSE of 1.5192.
 
-**Justin Chanthabandith (EDA and Data Engineer)**  
-Led exploratory data analysis to better understand data structure, missingness, class imbalance, and feature trends. Also contributed to data engineering tasks including data cleaning, transformation, and feature preparation for downstream modeling.
+The final results show that direct gradient boosting regression, especially LightGBM and XGBoost, is the strongest approach for this session-level revenue prediction task.
+
+---
+
+## 7. Statement of Collaboration
+[Back to Top](#top)
+
+**Pooja Panchal**  
+Led project organization and contributed to data engineering, JSON extraction, report writing, README development, and final notebook support.
+
+**Jinxin Xiao**  
+Contributed to EDA analysis and implemented the LightGBM modeling work.
+
+**Justin Chanthabandith**  
+Contributed to Kaggle data access, EDA structure, chart interpretation, modeling pipeline design, and XGBoost implementation.
+
+All team members contributed to the final notebook narrative, model comparison, and result interpretation.
 
 ---
 
 ## Repository Structure
+[Back to Top](#top)
 
 ```bash
 .
-├── config
-│   ├── main.yaml
-│   ├── model
-│   │   ├── random_forest.yaml
-│   │   ├── xgboost.yaml
-│   │   └── lightgbm.yaml
-│   └── process
-│       ├── flatten.yaml
-│       └── preprocess.yaml
-├── data
-│   ├── raw
-│   ├── processed
-│   └── final
-├── docs
-├── models
-├── notebooks
-├── reports
-│   └── figures
-├── src
-│   ├── __init__.py
-│   ├── data
-│   │   ├── flatten_ga.py
-│   │   └── preprocess.py
-│   ├── features
-│   │   └── build_features.py
-│   ├── models
-│   │   ├── train_classifier.py
-│   │   ├── train_regressor.py
-│   │   ├── train_single_stage.py
-│   │   └── evaluate.py
-│   └── visualization
-│       └── plots.py
-├── tests
-├── README.md
-└── requirements.txt
+|-- data
+|   `-- train_v2.csv
+|-- notebooks
+|   |-- Milestone_3.ipynb
+|   `-- Milestone_4.ipynb
+|-- reports
+|   `-- figures
+|-- README.md
+`-- requirements.txt
+```
+
+---
+
+## How to Run
+[Back to Top](#top)
+
+### 1. Install dependencies
+
+```bash
+pip install kaggle pandas polars pyarrow scikit-learn matplotlib xgboost lightgbm jupyter
+```
+
+### 2. Download the data
+
+Use one of the following options:
+
+- Run the Kaggle download cells inside `Milestone_4.ipynb` after adding your Kaggle API token.
+- Download `train_v2.csv` manually from Kaggle and place it where the notebook expects it.
+
+The final notebook uses:
+
+```python
+DATA_PATH = "train_v2.csv"
+```
+
+If your data is stored in another folder, update `DATA_PATH` before running the data loading cell.
+
+### 3. Open the final notebook
+
+```bash
+jupyter notebook notebooks/Milestone_4.ipynb
+```
+
+### 4. Run the notebook cells in order
+
+The final notebook includes:
+
+1. Kaggle setup and data loading
+2. JSON field extraction
+3. Target engineering
+4. Exploratory data analysis
+5. Leakage-safe visitor feature engineering
+6. Visitor-grouped train/test split
+7. Model training and evaluation
+8. Final results and interpretation
+
+---
+
+## References
+[Back to Top](#top)
+
+1. Kaggle. *Google Analytics Customer Revenue Prediction*. https://www.kaggle.com/c/ga-customer-revenue-prediction
+2. Breiman, L. (2001). *Random Forests*. Machine Learning, 45(1), 5-32.
+3. Chen, T., and Guestrin, C. (2016). *XGBoost: A Scalable Tree Boosting System*. Proceedings of KDD.
+4. Ke, G. et al. (2017). *LightGBM: A Highly Efficient Gradient Boosting Decision Tree*. Proceedings of NeurIPS.
+5. Scikit-learn Developers. *Scikit-learn: Machine Learning in Python*. https://scikit-learn.org
+6. Polars Developers. *Polars Documentation*. https://pola.rs
