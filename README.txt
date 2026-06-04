@@ -1,4 +1,4 @@
-Group 3 — Google Analytics Session Revenue Prediction
+Group 2 — Google Analytics Session Revenue Prediction
 DSC 288R Capstone | Justin Chanthabandith · Pooja Panchal · Jinxin Xiao
 
 ========================================
